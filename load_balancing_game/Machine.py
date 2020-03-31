@@ -1,3 +1,10 @@
+"""
+Class Machine:
+    - A machine will have a speed and a series of jobs assigned to it
+    - Depending on the speed, the time consumed to perform those jobs will change
+    - Such time defines the cost of the machine, which is also the cost for the player that assigned its job to it
+"""
+
 
 class Machine:
 
@@ -9,6 +16,7 @@ class Machine:
         self.free_time = -1
         self.end_time = -1
 
+    # Updates a machine cost every time it gets a job assigned or deassigned
     def compute_cost(self):
         if self.assigned_jobs:
             cost = 0
@@ -19,18 +27,20 @@ class Machine:
     def get_cost(self):
         return self.cost
 
+    def get_speed(self):
+        return self.speed
+
     def assign_job(self, job):
         self.assigned_jobs.append((job))
         self.compute_cost()
 
     def deassign_job(self, delete_job):
         self.assigned_jobs = [job for job in self.assigned_jobs if job.owner != delete_job.owner]
-        # self.assigned_jobs = [(player_name, job) for player_name, job in self.assigned_jobs if player_name != delete_player]
         self.compute_cost()
 
     def print_jobs(self):
         l = []
         for job in self.assigned_jobs:
-            s = job.print() #"<"+str(job.owner), str(job.get_cost())+">"
+            s = job.print()
             l.append(s)
         return l

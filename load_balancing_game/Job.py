@@ -1,4 +1,8 @@
-import random
+"""
+Class Job:
+    - A Job is defined by the player who owns it and its base cost
+    - Such cost will increase or decrease depending on the speed of the machine that performs it
+"""
 
 
 class Job:

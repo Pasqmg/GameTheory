@@ -1,3 +1,11 @@
+"""
+Class Game:
+    - Creates a game with the indicated number of players and machines
+    - The setup_game() function must be modify to define the game elements and costs
+    - The function play() reproduces the Best-Response behaviour
+        - The Best-Response strategy is chosen by function choose_machine() of the Player class
+"""
+
 import random
 
 from loguru import logger
@@ -10,12 +18,14 @@ num_machines = 3
 players = []
 machines = []
 
-weight_matrix = [  # m1, m2, m3, m4
-    [20, 10, 1, 5],  # player_1
-    [20, 10, 1, 5],  # player_2
-    [20, 10, 5, 5],  # player_3
-    [1, 2, 3, 6]  # player_4
-]
+
+# NOT IN USE ANYMORE
+# weight_matrix = [  # m1, m2, m3, m4
+#     [20, 10, 1, 5],  # player_1
+#     [20, 10, 1, 5],  # player_2
+#     [20, 10, 5, 5],  # player_3
+#     [1, 2, 3, 6]  # player_4
+# ]
 
 
 # print final state
@@ -27,10 +37,10 @@ def print_game():
 
 
 """
-Player and machine creation. Assigns weigths to each player's job according to the weight matrix
+    - Creates num_players players
+    - The user must manually create EXACTLY num_machines machines, defining its name and speed (multiplier)
+    - Currently all players have one job with the same base cost (10)
 """
-
-
 def setup_game(num_players, num_machines):
     # game setup
     for i in range(num_players):
@@ -40,44 +50,22 @@ def setup_game(num_players, num_machines):
     machines.append(Machine("medium_machine", 0.5))
     machines.append(Machine("slow_machine", 1))
 
+    # Gives each player a job and precalculates the cost of such job in every machine, storing it in weights dict.
     for p in range(num_players):
         weights = {}
         players[p].set_job(Job(players[p].name, 10))
         for m in range(num_machines):
-            weights[machines[m]] = machines[m].speed * players[p].get_job_cost()
+            weights[machines[m]] = machines[m].get_speed() * players[p].get_job_cost()
         players[p].set_weights(weights)
-        # print(players[p].name)
-        # for m in players[p].weights:
-        #     print(m.id, ':', players[p].weights[m])
 
     logger.info("_________________________________________________________________________")
     logger.info("\t\t\t\t\t\t\tGame setup")
     logger.info("-------------------------------------------------------------------------")
     for p in players:
-        logger.info("Player {} has job {}".format(p.name, p.job.print()))
-
-
-# print game
-'''
-print("Game status\n---------------------------")
-for p in range(num_players):
-    print("Player", p.name, "\n")
-    for m in range(machines):
-        w = p.get_weight(m)
-        print("Machine", m.id, "cost:", w)
-    print("\n")
-'''
+        logger.info("Player {} has job {}".format(p.get_name(), p.job.print()))
 
 
 def play():
-    # turn
-    # 1. Machines compute their current cost
-    # 2. Players decide to which machine they assign their job
-    """
-    for p in players:
-        p.first_move()
-        p.update_cost()
-    """
     end = False
     turn = 0
     while not end:
@@ -86,8 +74,6 @@ def play():
         logger.info("_________________________________________________________________________")
         logger.info("\t\t\t\t\t\t\tGame turn {}".format(turn))
         logger.info("-------------------------------------------------------------------------")
-        # Update machine costs
-        # for m in machines: m.compute_cost()
         # Keep track of changes in player's strategies
         change = []
         # for each player in the game
@@ -111,12 +97,10 @@ def play():
             else:
                 change.append(False)
                 logger.info("Player {} did not change their machine".format(p.name))
-            # update costs
-            # for m in machines: m.compute_cost()
+            # update players costs for next turn
             p.update_cost()
         if not any(change):
             end = True
-        # print_game()
 
     logger.info("_________________________________________________________________________")
     logger.info("\t\t\t\t\t\t\tEND of Game")
