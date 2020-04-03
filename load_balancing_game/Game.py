@@ -13,7 +13,7 @@ from load_balancing_game.Machine import Machine
 from load_balancing_game.Player import Player
 from load_balancing_game.Job import Job
 
-num_players = 5
+num_players = 6
 num_machines = 3
 players = []
 machines = []
@@ -47,15 +47,30 @@ def setup_game(num_players, num_machines):
         players.append(Player("player_" + str(i + 1)))
 
     machines.append(Machine("fast_machine", 0.3))
+    def compute_custom_cost(n):
+        return pow(2, n)
+    machines[0].compute_custom_cost = compute_custom_cost
+
     machines.append(Machine("medium_machine", 0.5))
+    def compute_custom_cost(n):
+        return 3*n
+    machines[1].compute_custom_cost = compute_custom_cost
+
     machines.append(Machine("slow_machine", 1))
+    def compute_custom_cost(n):
+        return 4*(n-1)+4
+    machines[2].compute_custom_cost = compute_custom_cost
+
 
     # Gives each player a job and precalculates the cost of such job in every machine, storing it in weights dict.
     for p in range(num_players):
         weights = {}
-        players[p].set_job(Job(players[p].name, 10))
+        players[p].set_job(Job(players[p].name, 1))
         for m in range(num_machines):
-            weights[machines[m]] = machines[m].get_speed() * players[p].get_job_cost()
+            if machines[m].compute_custom_cost is None:
+                weights[machines[m]] = machines[m].get_speed() * players[p].get_job_cost()
+            else : # we are using custom costs
+                players[p].machines.append(machines[m])
         players[p].set_weights(weights)
 
     logger.info("_________________________________________________________________________")

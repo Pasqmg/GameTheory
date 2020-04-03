@@ -15,14 +15,21 @@ class Machine:
         self.cost = 0
         self.free_time = -1
         self.end_time = -1
+        self.compute_custom_cost = None
 
     # Updates a machine cost every time it gets a job assigned or deassigned
     def compute_cost(self):
-        if self.assigned_jobs:
-            cost = 0
-            for job in self.assigned_jobs:
-                cost += self.speed * job.get_cost()
-            self.cost = cost
+        if self.compute_custom_cost is None:
+            if self.assigned_jobs:
+                cost = 0
+                for job in self.assigned_jobs:
+                    cost += self.speed * job.get_cost()
+                self.cost = cost
+        else:
+            self.cost = self.compute_custom_cost(len(self.assigned_jobs))
+
+    def get_cost_of_adding_one_job(self):
+        return self.compute_custom_cost(len(self.assigned_jobs)+1)
 
     def get_cost(self):
         return self.cost
