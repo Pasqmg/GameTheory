@@ -50,7 +50,6 @@ class Player:
 
     # Performs a best-response choice of strategy
     def choose_machine(self):
-
             # Using machines with speed and job costs
         if not self.machines :
             # Look for a better machine
@@ -71,21 +70,28 @@ class Player:
                 self.current_machine.assign_job(self.job)
             # else: I do no change machine, I do nothing
         else :
-            # Using machines with custom cost functions
-            for machine in self.machines:
-                # cost = cost of the machine if it had my job assigned
-                # Strategy: compute the cost of assigning my job to each machine, keep the lower cost
-                cost = machine.get_cost_of_adding_one_job()
-                if cost < self.cost:
-                    self.new_machine = machine
-                    self.cost = cost
-            if self.current_machine is None:  # first turn, I still have no machine assigned
-                self.current_machine = self.new_machine
-                self.current_machine.assign_job(self.job)
-            elif self.current_machine != self.new_machine:  # I changed my previous machine to a new one
-                self.current_machine.deassign_job(self.job)
-                self.current_machine = self.new_machine
-                self.current_machine.assign_job(self.job)
+            if self.name == "player_5" or self.name == "player_3":
+                if self.current_machine is None:  # first turn, I still have no machine assigned
+                    self.new_machine = self.machines[2]
+                    self.current_machine = self.new_machine
+                    self.current_machine.assign_job(self.job)
+                    self.update_cost()
+            else:
+                # Using machines with custom cost functions
+                for machine in self.machines:
+                    # cost = cost of the machine if it had my job assigned
+                    # Strategy: compute the cost of assigning my job to each machine, keep the lower cost
+                    cost = machine.get_cost_of_adding_one_job()
+                    if cost < self.cost:
+                        self.new_machine = machine
+                        self.cost = cost
+                if self.current_machine is None:  # first turn, I still have no machine assigned
+                    self.current_machine = self.new_machine
+                    self.current_machine.assign_job(self.job)
+                elif self.current_machine != self.new_machine:  # I changed my previous machine to a new one
+                    self.current_machine.deassign_job(self.job)
+                    self.current_machine = self.new_machine
+                    self.current_machine.assign_job(self.job)
 
     """
     CURRENTLY NOT IN USE 
